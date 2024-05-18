@@ -62,7 +62,7 @@ def register_new(root:tk.Tk, first_entry:tk.Entry, user_entry:tk.Entry, password
             "username": username,
             "password": password
         },
-        "data": [
+        "creds": [
             
         ]
     }

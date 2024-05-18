@@ -1,5 +1,7 @@
+from credential import Credential
+
 name = ""
 username = ""
 password = ""
 
-user_passwords = []
+user_creds:list[Credential] = []

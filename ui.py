@@ -1,13 +1,13 @@
 from loginutil import verify_existing
-import genmethods as gen
 import tkinter as tk
+import credutil
 
 root:tk.Tk
 
 def init() -> None:
     global root
     root = tk.Tk()
-    root.title("Apothiki")
+    root.title("")
     root.configure(bg="light blue")
 
     width = 1175
@@ -50,8 +50,16 @@ def init() -> None:
 def init_task_interface() -> None:
     global root
     root = tk.Tk()
-    root.title("Apothiki")
+    root.title("")
     root.configure(bg="red")
+    
+    width = 1175
+    height = 625
+    horiz_offset = (root.winfo_screenwidth() - width) / 2
+    vert_offset = (root.winfo_screenheight() - height) / 2
+    root.geometry(f"{width}x{height}+{int(horiz_offset)}+{int(vert_offset)}")
+    root.resizable(False, False)
+
     label = tk.Label(root, text="Apothiki", font=("Arial", 80), bg="light blue", justify="center")
     label.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
     root.mainloop()
