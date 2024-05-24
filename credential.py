@@ -1,3 +1,4 @@
+from tkinter import messagebox
 import random as rr
 import constants
 
@@ -55,30 +56,42 @@ class Credential:
     def get_tag_priority(self) -> int:
         return self.tag_keycodes[self.tag][3]
 
-    def generate_random_cred(self, length:int=20, include_letters:bool=False, include_digits:bool=False, include_punc:bool=False) -> str:
+    def generate_random_cred(self, entry, length, include_letters:bool=False, include_digits:bool=False, include_punc:bool=False) -> None:
         if not include_letters and not include_digits and not include_punc:
             raise ValueError("Must include at least one type of character")
+        
+        if entry.get() != "":
+            messagebox.showerror("Error", "Clear entry before generating")
+            return
         
         cred = ""
         if include_letters and include_digits and include_punc:
             for _ in range(length):
                 cred += rr.choice(constants.CRED_CHARS)
-            return cred
+            entry.delete(0, "end")
+            entry.insert(0, cred)
+            return
     
         if include_letters and include_digits:
             for _ in range(length):
                 cred += rr.choice(constants.LET_CHARS + constants.DIGIT_CHARS)
-            return cred
+            entry.delete(0, "end")
+            entry.insert(0, cred)
+            return
         
         if include_letters:
             for _ in range(length):
                 cred += rr.choice(constants.LET_CHARS)
-            return cred
+            entry.delete(0, "end")
+            entry.insert(0, cred)
+            return
         
         if include_digits:
             for _ in range(length):
                 cred += rr.choice(constants.DIGIT_CHARS)
-            return cred
+            entry.delete(0, "end")
+            entry.insert(0, cred)
+            return
 
     def __repr__(self) -> str:
         return f"\nService: {self.service}\nUsername: {self.username}\nPassword: {self.password}\nEmail: {self.email}\nInfo: {self.other_info}\n"
