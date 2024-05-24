@@ -65,12 +65,14 @@ def init_task_interface() -> None:
 
     util_frame = tk.Frame(root, bg="red")
     util_frame.place(relx=0, rely=0, anchor="nw")
+    search_frame = tk.Frame(root, bg="red")
+    search_frame.place(relx=0.5, rely=0, anchor="n")
     profile_frame = tk.Frame(root, bg="red")
     profile_frame.place(relx=1, rely=0, anchor="ne")
     cred_frame = tk.Frame(root)
     cred_frame.place(relx=0.5, rely=1, anchor="s")
 
-    cred_list = Listbox(cred_frame, root, 826, 676, "grey")
+    cred_list = Listbox(cred_frame, root, 826, 676, "grey", util_frame)
     cred_list.list_index = 0
     for idx, task in enumerate(globalvar.user_creds):
         if idx < cred_list.list_index:
@@ -79,6 +81,13 @@ def init_task_interface() -> None:
             break
         cred_list.insert(idx-cred_list.list_index, task)
     cred_list.pack()
+
+    globalvar.filtered_creds = globalvar.user_creds
+    search_entry = tk.Entry(search_frame, bd=0, bg="#ffabab", fg="black", font=("Times New Roman", 35, "bold"), width=20)
+    search_entry.grid(row=0, column=0, padx=10, pady=10)
+    search_icon = tk.PhotoImage(file=constants.SEARCHFILE)
+    search_button = tk.Button(search_frame, image=search_icon, bd=0, bg="red", command=lambda e=search_entry, f=cred_list.filter_insert, b=cred_list.back_from_search : credutil.search_creds(e,f,b))
+    search_button.grid(row=0, column=1)
 
     save_icon = tk.PhotoImage(file=constants.SAVEFILE)
     save_button = tk.Button(util_frame, image=save_icon, bd=0, bg="red", command=credutil.save_creds)
@@ -108,9 +117,9 @@ def init_task_interface() -> None:
     add_icon = tk.PhotoImage(file=constants.ADDFILE)
     add_button = tk.Button(root, image=add_icon, bg="red", bd=0)
     add_button.configure(command=cred_list.add_task)
-    add_button.place(relx=0.1, rely=0.5, anchor="center")
+    add_button.place(relx=0.9, rely=0.5, anchor="center")
     add_label = tk.Label(root, text="Add Service", justify="center", font=("Times New Roman", 35), bg="red", fg="black")
-    add_label.place(relx=0.1, rely=0.6, anchor="center")
+    add_label.place(relx=0.9, rely=0.6, anchor="center")
 
     def exit(event:tk.Event) -> None:
         root.destroy()

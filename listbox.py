@@ -6,7 +6,7 @@ import constants
 import credutil
 
 class Listbox(tk.Frame):
-    def __init__(self, master=None, root=tk.Tk, width=0, height=0, bg="white", **kwargs) -> None:
+    def __init__(self, master=None, root=tk.Tk, width=0, height=0, bg="white", util_frame=None, **kwargs) -> None:
         super().__init__(master, **kwargs)
         self.canvas = tk.Canvas(self, width=width, height=height, bg=bg)
         self.list_frame = tk.Frame(self.canvas)
@@ -45,14 +45,12 @@ class Listbox(tk.Frame):
         self.filter_service:tk.Button
         self.filter_tag:tk.Button
 
-
         self.old_service:tk.Label
         self.old_username:tk.Label
         self.old_password:tk.Label
         self.old_email:tk.Label
         self.old_tag:tk.Label
         self.old_info:tk.Label
-    
         self.service_entry:tk.Entry
         self.username_entry:tk.Entry
         self.password_entry:tk.Entry
@@ -62,8 +60,91 @@ class Listbox(tk.Frame):
         self.tag_var.set("")
         self.info_entry:tk.Entry
 
+        self.nocategory_var = tk.IntVar(); self.nocategory_var.set(1)
+        self.socialmedia_var = tk.IntVar(); self.socialmedia_var.set(1)
+        self.banking_var = tk.IntVar(); self.banking_var.set(1)
+        self.shopping_var = tk.IntVar(); self.shopping_var.set(1)
+        self.streaming_var = tk.IntVar(); self.streaming_var.set(1)
+        self.productivity_var = tk.IntVar(); self.productivity_var.set(1)
+        self.gaming_var = tk.IntVar(); self.gaming_var.set(1)
+        self.travel_var = tk.IntVar(); self.travel_var.set(1)
+        self.telecomm_var = tk.IntVar(); self.telecomm_var.set(1)
+        self.utilities_var = tk.IntVar(); self.utilities_var.set(1)
+        self.subscription_var = tk.IntVar(); self.subscription_var.set(1)
+        self.professional_var = tk.IntVar(); self.professional_var.set(1)
+        self.nocategory_check = tk.Checkbutton(util_frame, bg="red", fg="black", variable=self.nocategory_var, text="No Category", font=("Times New Roman", 25, "bold"), command=self.active_filter)
+        self.nocategory_check.grid(row=2, column=0, columnspan=2)
+        self.socialmedia_check = tk.Checkbutton(util_frame, bg="red", fg="black", variable=self.socialmedia_var, text="Social Media", font=("Times New Roman", 25, "bold"), command=self.active_filter)
+        self.socialmedia_check.grid(row=3, column=0, columnspan=2)
+        self.banking_check = tk.Checkbutton(util_frame, bg="red", fg="black", variable=self.banking_var, text="Banking", font=("Times New Roman", 25, "bold"), command=self.active_filter)
+        self.banking_check.grid(row=4, column=0, columnspan=2)
+        self.shopping_check = tk.Checkbutton(util_frame, bg="red", fg="black", variable=self.shopping_var, text="Shopping", font=("Times New Roman", 25, "bold"), command=self.active_filter)
+        self.shopping_check.grid(row=5, column=0, columnspan=2)
+        self.streaming_check = tk.Checkbutton(util_frame, bg="red", fg="black", variable=self.streaming_var, text="Streaming", font=("Times New Roman", 25, "bold"), command=self.active_filter)
+        self.streaming_check.grid(row=6, column=0, columnspan=2)
+        self.productivity_check = tk.Checkbutton(util_frame, bg="red", fg="black", variable=self.productivity_var, text="Productivity", font=("Times New Roman", 25, "bold"), command=self.active_filter)
+        self.productivity_check.grid(row=7, column=0, columnspan=2)
+        self.gaming_check = tk.Checkbutton(util_frame, bg="red", fg="black", variable=self.gaming_var, text="Gaming", font=("Times New Roman", 25, "bold"), command=self.active_filter)
+        self.gaming_check.grid(row=8, column=0, columnspan=2)
+        self.travel_check = tk.Checkbutton(util_frame, bg="red", fg="black", variable=self.travel_var, text="Travel", font=("Times New Roman", 25, "bold"), command=self.active_filter)
+        self.travel_check.grid(row=9, column=0, columnspan=2)
+        self.telecomm_check = tk.Checkbutton(util_frame, bg="red", fg="black", variable=self.telecomm_var, text="Telecomm", font=("Times New Roman", 25, "bold"), command=self.active_filter)
+        self.telecomm_check.grid(row=10, column=0, columnspan=2)
+        self.utilities_check = tk.Checkbutton(util_frame, bg="red", fg="black", variable=self.utilities_var, text="Utilities", font=("Times New Roman", 25, "bold"), command=self.active_filter)
+        self.utilities_check.grid(row=11, column=0, columnspan=2)
+        self.subscription_check = tk.Checkbutton(util_frame, bg="red", fg="black", variable=self.subscription_var, text="Subscription", font=("Times New Roman", 25, "bold"), command=self.active_filter)
+        self.subscription_check.grid(row=12, column=0, columnspan=2)
+        self.professional_check = tk.Checkbutton(util_frame, bg="red", fg="black", variable=self.professional_var, text="Professional", font=("Times New Roman", 25, "bold"), command=self.active_filter)
+        self.professional_check.grid(row=13, column=0, columnspan=2)
+        self.update_checks()
+
+        self.prev_tags = []
+        self.curr_tags = []
+
     def rgb_to_hex(self, rgb:tuple) -> str:
         return '#{:02x}{:02x}{:02x}'.format(*rgb)
+
+    def checks_to_true(self):
+        self.nocategory_var.set(1)
+        self.socialmedia_var.set(1)
+        self.banking_var.set(1)
+        self.shopping_var.set(1)
+        self.streaming_var.set(1)
+        self.productivity_var.set(1)
+        self.gaming_var.set(1)
+        self.travel_var.set(1)
+        self.telecomm_var.set(1)
+        self.utilities_var.set(1)
+        self.subscription_var.set(1)
+        self.professional_var.set(1)
+    
+    def checks_to_false(self):
+        self.nocategory_var.set(0)
+        self.socialmedia_var.set(0)
+        self.banking_var.set(0)
+        self.shopping_var.set(0)
+        self.streaming_var.set(0)
+        self.productivity_var.set(0)
+        self.gaming_var.set(0)
+        self.travel_var.set(0)
+        self.telecomm_var.set(0)
+        self.utilities_var.set(0)
+        self.subscription_var.set(0)
+        self.professional_var.set(0)
+
+    def update_checks(self):
+        self.check_values = {"No Category":True if self.nocategory_var.get() == 1 else False,
+                             "Social Media":True if self.socialmedia_var.get() == 1 else False,
+                             "Banking":True if self.banking_var.get() == 1 else False,
+                             "Shopping":True if self.shopping_var.get() == 1 else False,
+                             "Streaming":True if self.streaming_var.get() == 1 else False,
+                             "Productivity":True if self.productivity_var.get() == 1 else False,
+                             "Gaming":True if self.gaming_var.get() == 1 else False,
+                             "Travel":True if self.travel_var.get() == 1 else False,
+                             "Telecomm":True if self.telecomm_var.get() == 1 else False,
+                             "Utilities":True if self.utilities_var.get() == 1 else False,
+                             "Subscription":True if self.subscription_var.get() == 1 else False,
+                             "Professional":True if self.professional_var.get() == 1 else False}
 
     def del_row_elements(self):
         services = self.cred_combos.keys()
@@ -83,8 +164,8 @@ class Listbox(tk.Frame):
         button_y_multiplier = 0.015 + (idx*0.13)
         self.cred_state.update({cred.service: [y_multiplier, 0, service_multiplier]})
         
-        service_label = tk.Label(self.canvas, text=cred.service[:13], font=('Helvetica', 15), bg=self.bg_color, fg="black")
-        service_label.place(relx=0, rely=service_multiplier, anchor="nw")
+        service_label = tk.Label(self.canvas, text=cred.service[:13], font=('Helvetica', 15), bg=self.rgb_to_hex(cred.get_tag_color()), fg=cred.get_tag_font_color())
+        service_label.place(relx=0.0075, rely=service_multiplier, anchor="nw")
         username_label = tk.Label(self.canvas, text=cred.username[:13], font=('Helvetica', 30), bg=self.bg_color, fg="black")
         username_label.place(relx=0.45, rely=y_multiplier, anchor="ne")
         password_label = tk.Label(self.canvas, text="*****", font=('Helvetica', 30), bg=self.bg_color, fg="black")
@@ -118,55 +199,65 @@ class Listbox(tk.Frame):
         self.cred_combos.update({cred.service:[cred.service, service_label, username_label, password_label, peek_button, info_button, edit_button, delete_button]})
     
     def move_down(self) -> None:
-        if self.list_index+8 > len(globalvariables.user_creds):
+        if self.list_index+8 > len(globalvariables.filtered_creds):
             return
 
         self.list_index += 1
-        self.del_row_elements()
-        self.place_forget()
-
-        for idx, cred in enumerate(globalvariables.user_creds):
-            if idx < self.list_index:
-                continue
-            if idx > self.list_index + 6:
-                break
-            self.insert(idx-self.list_index, cred)
-        self.pack()
+        self.filter_insert()
 
     def move_up(self) -> None:
         if self.list_index <= 0:
             return
         
         self.list_index -= 1
-        self.del_row_elements()
-        self.place_forget()
-
-        for idx, cred in enumerate(globalvariables.user_creds):
-            if idx < self.list_index:
-                continue
-            if idx > self.list_index + 6:
-                break
-            self.insert(idx-self.list_index, cred)
-        self.pack()
+        self.filter_insert()
 
     def add_task(self) -> None:
         if credutil.amount_cred("service") == 1:
             return
             
         globalvariables.user_creds.insert(0, Credential())
+        globalvariables.filtered_creds = globalvariables.user_creds
+        self.checks_to_true()
         self.list_index = 0
+        self.filter_insert()
+
+        credutil.save_creds()
+
+    def active_filter(self) -> None:
+        self.update_checks()
+
+        self.curr_tags = []
+        for check in self.check_values.keys():
+            if self.check_values[check]:
+                self.curr_tags.append(check)
+        
+        if self.curr_tags == self.prev_tags:
+            return
+        
+        globalvariables.filtered_creds.clear()
+        for cred in globalvariables.user_creds:
+            if cred.tag in self.curr_tags:
+                globalvariables.filtered_creds.append(cred)
+        
+        self.prev_tags = self.curr_tags
+        self.filter_insert()
+
+    def filter_insert(self) -> None:
         self.del_row_elements()
         self.place_forget()
 
-        for idx, cred in enumerate(globalvariables.user_creds):
+        for idx, task in enumerate(globalvariables.filtered_creds):
             if idx < self.list_index:
                 continue
             if idx > self.list_index + 6:
                 break
-            self.insert(idx-self.list_index, cred)
+            self.insert(idx-self.list_index, task)
         self.pack()
 
-        credutil.save_creds()
+    def back_from_search(self) -> None:
+        self.checks_to_true()
+        self.active_filter()
 
     def filter_interface(self) -> None:
         self.x = self.root.winfo_rootx()
@@ -213,15 +304,7 @@ class Listbox(tk.Frame):
         self.filter_service.destroy()
         self.filter_tag.destroy()
 
-        self.del_row_elements()
-        self.place_forget()
-        for idx, cred in enumerate(globalvariables.user_creds):
-            if idx < self.list_index:
-                continue
-            if idx > self.list_index + 6:
-                break
-            self.insert(idx-self.list_index, cred)
-        self.pack()
+        self.filter_insert()
 
     def edit_task_interface(self, service:str) -> None:
         self.x = self.root.winfo_rootx()
@@ -281,16 +364,7 @@ class Listbox(tk.Frame):
         if not credutil.edit_cred(service, service_entry, username_entry, password_entry, email_entry, tag_var, id_entry):
             return
         self.back_from_edit()
-
-        self.del_row_elements()
-        self.place_forget()
-        for idx, cred in enumerate(globalvariables.user_creds):
-            if idx < self.list_index:
-                continue
-            if idx > self.list_index + 6:
-                break
-            self.insert(idx-self.list_index, cred)
-        self.pack()
+        self.filter_insert()
 
     def back_from_edit(self) -> None:
         self.tag_var.set("")
@@ -318,18 +392,11 @@ class Listbox(tk.Frame):
             if combo[7] == delete_button:
                 service = combo[0]
         
-        self.del_row_elements()
         self.cred_combos.pop(self.cred_combos[service][0])
         globalvariables.user_creds.pop(globalvariables.user_creds.index(credutil.find_cred(service)))
-        self.place_forget()
-
-        for idx, cred in enumerate(globalvariables.user_creds):
-            if idx < self.list_index:
-                continue
-            if idx > self.list_index + 6:
-                break
-            self.insert(idx-self.list_index, cred)
-        self.pack()
+        globalvariables.filtered_creds = globalvariables.user_creds
+        self.checks_to_true()
+        self.filter_insert()
     
     def toggle_peek(self, service:str) -> None:
         found_state = self.cred_state[service]
@@ -343,13 +410,13 @@ class Listbox(tk.Frame):
             found_labels[2].configure(text=credutil.find_cred(service).password)
             found_labels[2].place(anchor="ne", relx=0.975-(4.55*0.0925), rely=found_state[0])
             found_labels[1].configure(text=credutil.find_cred(service).username[:3] + "...")
-            found_labels[1].place(anchor="nw", relx=0, rely=found_state[0])
+            found_labels[1].place(anchor="nw", relx=0.0075, rely=found_state[0])
         else:
             found_labels = self.cred_labels[service]
             found_labels[1].place_forget()
             found_labels[2].place_forget()
 
-            found_labels[0].place(anchor="nw", relx=0, rely=found_state[2])
+            found_labels[0].place(anchor="nw", relx=0.0075, rely=found_state[2])
             found_labels[1].configure(text=credutil.find_cred(service).username[:13])
             found_labels[1].place(anchor="ne", relx=0.45, rely=found_state[0])
             found_labels[2].configure(text="*****")
@@ -408,12 +475,4 @@ class Listbox(tk.Frame):
         self.tag_label.destroy()
         self.info_label.destroy()
 
-        self.del_row_elements()
-        self.place_forget()
-        for idx, cred in enumerate(globalvariables.user_creds):
-            if idx < self.list_index:
-                continue
-            if idx > self.list_index + 6:
-                break
-            self.insert(idx-self.list_index, cred)
-        self.pack()
+        self.filter_insert()

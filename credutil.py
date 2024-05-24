@@ -19,8 +19,23 @@ def find_cred(service:str) -> Credential:
             return cred
     return None
 
+def search_creds(entry:tk.Entry, insert_func, back_func) -> None:
+    search = entry.get()
+    if search == "":
+        back_func()
+        return
+    
+    results = []
+    for cred in globalvariables.filtered_creds:
+        if search in cred.service or search in cred.username or search in cred.email or search in cred.other_info:
+            results.append(cred)
+    
+    globalvariables.filtered_creds = results
+    insert_func()
+
 def edit_cred(service:str, service_entry:tk.Entry, username_entry:tk.Entry, password_entry:tk.Entry, email_entry:tk.Entry, tag_var:tk.StringVar, info_entry:tk.Entry) -> bool:
     cred_index = globalvariables.user_creds.index(find_cred(service))
+    filtered_index = globalvariables.filtered_creds.index(find_cred(service))
 
     if globalvariables.user_creds[cred_index].tag == "" and tag_var.get() == "":
         messagebox.showerror("Tag Error", "Please select a tag from the dropdown")
@@ -37,15 +52,16 @@ def edit_cred(service:str, service_entry:tk.Entry, username_entry:tk.Entry, pass
     if email_entry.get() != "":
         globalvariables.user_creds[cred_index].email = email_entry.get()
     if info_entry.get() != "":
-        globalvariables.user_creds[cred_index].info = info_entry.get()
+        globalvariables.user_creds[cred_index].other_info = info_entry.get()
     
+    globalvariables.filtered_creds[filtered_index] = globalvariables.user_creds[cred_index]
     return True
 
 def service_sort() -> None:
-    globalvariables.user_creds.sort(key=lambda cred : cred.service)
+    globalvariables.filtered_creds.sort(key=lambda cred : cred.service)
 
 def tag_sort() -> None:
-    globalvariables.user_creds.sort(key=lambda cred : cred.tag)
+    globalvariables.filtered_creds.sort(key=lambda cred : cred.get_tag_priority())
 
 def load_creds() -> None:
     data:dict = {}

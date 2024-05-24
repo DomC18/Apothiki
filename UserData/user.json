@@ -5,12 +5,12 @@
     },
     "creds": [
         {
-            "service": "service",
-            "username": "username",
-            "password": "password",
-            "email": "email",
-            "tag": "No Category",
-            "info": "info"
+            "service": "fidelity",
+            "username": "domcat518",
+            "password": "JAFSDKLASLD9",
+            "email": "dmacatania@gmail.com",
+            "tag": "Banking",
+            "info": "important"
         },
         {
             "service": "instagram",
@@ -29,12 +29,12 @@
             "info": "info"
         },
         {
-            "service": "zed",
-            "username": "username",
-            "password": "password",
-            "email": "email",
-            "tag": "No Category",
-            "info": "info"
+            "service": "southwest",
+            "username": "kevin",
+            "password": "leprechaun101",
+            "email": "kevin@laperriere.com",
+            "tag": "Travel",
+            "info": "dom funny"
         }
     ]
 }

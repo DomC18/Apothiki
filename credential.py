@@ -43,16 +43,16 @@ class Credential:
     def edit_other_info(self, new_info:str) -> None:
         self.other_info = new_info
 
-    def get_tag_short(self):
+    def get_tag_short(self) -> str:
         return self.tag_keycodes[self.tag][0]
     
-    def get_tag_color(self):
+    def get_tag_color(self) -> tuple:
         return self.tag_keycodes[self.tag][1]
     
-    def get_tag_font_color(self):
+    def get_tag_font_color(self) -> str:
         return self.tag_keycodes[self.tag][2]
     
-    def get_tag_priority(self):
+    def get_tag_priority(self) -> int:
         return self.tag_keycodes[self.tag][3]
 
     def generate_random_cred(self, length:int=20, include_letters:bool=False, include_digits:bool=False, include_punc:bool=False) -> str:

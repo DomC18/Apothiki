@@ -17,6 +17,7 @@ INFOLARGEFILE = ICONDIR + "infolarge.png"
 PEEKFILE = ICONDIR + "peek.png"
 PROFILEFILE = ICONDIR + "profile.png"
 SAVEFILE = ICONDIR + "save.png"
+SEARCHFILE = ICONDIR + "search.png"
 
 CRED_CHARS = string.ascii_letters + string.digits + string.punctuation
 LET_CHARS = string.ascii_letters
