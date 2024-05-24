@@ -10,7 +10,7 @@ class Listbox(tk.Frame):
         super().__init__(master, **kwargs)
         self.canvas = tk.Canvas(self, width=width, height=height, bg=bg)
         self.list_frame = tk.Frame(self.canvas)
-        self.bg_color = self.rgb_to_hex((240, 240, 240))
+        self.bg_color = self.rgb_to_hex((235, 235, 235))
         self.root = root
 
         self.canvas.pack(side="left", fill="both", expand=True)
@@ -18,13 +18,16 @@ class Listbox(tk.Frame):
 
         self.list_index:int
 
+        self.peek_icon = tk.PhotoImage(file=constants.PEEKFILE)
+        self.info_large_icon = tk.PhotoImage(file=constants.INFOLARGEFILE)
+        self.info_icon = tk.PhotoImage(file=constants.INFOFILE)
         self.edit_large_icon = tk.PhotoImage(file=constants.EDITLARGEFILE)
         self.edit_icon = tk.PhotoImage(file=constants.EDITMEDIUMFILE)
         self.delete_icon = tk.PhotoImage(file=constants.DELETEMEDIUMFILE)
         self.filter_large_icon = tk.PhotoImage(file=constants.FILTERLARGEFILE)
 
         self.button_images : dict = {}
-        self.task_combos : dict = {}
+        self.cred_combos : dict = {}
 
         self.name_option = tk.Button()
         self.desc_option = tk.Button()
@@ -33,7 +36,7 @@ class Listbox(tk.Frame):
         self.importance_option = tk.Button()
         self.exit_option = tk.Button()
 
-        self.curr_task_name:str
+        self.curr_cred_service:str
         self.x:int
         self.y:int
         self.w:int
@@ -46,10 +49,8 @@ class Listbox(tk.Frame):
         self.edit_label:tk.Label
         self.back_button:tk.Button
 
-        self.filter_name:tk.Button
-        self.filter_dead:tk.Button
-        self.filter_status:tk.Button
-        self.filter_importance:tk.Button
+        self.filter_service:tk.Button
+        self.filter_tag:tk.Button
 
         self.old_name:tk.Label
         self.old_desc:tk.Label
@@ -66,16 +67,43 @@ class Listbox(tk.Frame):
     def rgb_to_hex(self, rgb:tuple) -> str:
         return '#{:02x}{:02x}{:02x}'.format(*rgb)
 
-    def insert(self, idx:int, task:credutil.Credential) -> None:
+    def del_row_elements(self):
+        services = self.cred_combos.keys()
+
+        for service in services:
+            self.cred_combos[service][1].destroy()
+            self.cred_combos[service][2].destroy()
+            self.cred_combos[service][3].destroy()
+            self.cred_combos[service][4].destroy()
+            self.cred_combos[service][5].destroy()
+            self.cred_combos[service][6].destroy()
+            self.cred_combos[service][7].destroy()
+
+    def insert(self, idx:int, cred:credutil.Credential) -> None:
         y_multiplier = 0.015 + (idx*0.13)
-        y_multiplier2 = 0.0785 + (idx*0.13)
         
-        name_label = tk.Label(self.canvas, text=task.name[:13], font=('Helvetica', 49))
-        name_label.place(relx=0.01, rely=y_multiplier, anchor="nw")
+        service_label = tk.Label(self.canvas, text=cred.service, font=('Helvetica', 20))
+        service_label.place(relx=0, rely=y_multiplier, anchor="nw")
+        username_label = tk.Label(self.canvas, text=cred.username[:13], font=('Helvetica', 49))
+        username_label.place(relx=0.01, rely=y_multiplier, anchor="nw")
+        password_label = tk.Label(self.canvas, text="*****", font=('Helvetica', 49))
+        password_label.place(relx=0.02, rely=y_multiplier, anchor="nw")
         
+        peek_button = tk.Button(self.canvas, bd=0, bg=self.bg_color)
+        self.button_images.update({peek_button:self.peek_icon})
+        peek_button.configure()
+        peek_button.configure(image=self.button_images[peek_button])
+        peek_button.place(relx=0.875, rely=y_multiplier, anchor="ne")
+
+        info_button = tk.Button(self.canvas, bd=0, bg=self.bg_color)
+        self.button_images.update({info_button:self.info_icon})
+        info_button.configure()
+        info_button.configure(image=self.button_images[info_button])
+        info_button.place(relx=0.975, rely=y_multiplier, anchor="ne")
+
         edit_button = tk.Button(self.canvas, bd=0, bg=self.bg_color)
         self.button_images.update({edit_button:self.edit_icon})
-        edit_button.configure(command=lambda n=task.name : self.edit_task_interface(n))
+        edit_button.configure(command=lambda s=cred.service : self.edit_task_interface(s))
         edit_button.configure(image=self.button_images[edit_button])
         edit_button.place(relx=0.875, rely=y_multiplier, anchor="ne")
         
@@ -84,34 +112,23 @@ class Listbox(tk.Frame):
         delete_button.configure(command=lambda b=delete_button : self.delete(b))
         delete_button.configure(image=self.button_images[delete_button])
         delete_button.place(relx=0.975, rely=y_multiplier, anchor="ne")
-
-        status_indicator = tk.Label(self.canvas, bg=self.rgb_to_hex(task.get_status_color()), text=task.get_status_short(), font=("Times New Roman", 60, "bold"), fg=task.get_status_font())
-        status_indicator.place(relx=0.575, rely=y_multiplier2, anchor="center")
-        importance_indicator = tk.Label(self.canvas, bg=self.rgb_to_hex(task.get_importance_color()), text=task.get_importance_short(), font=("Times New Roman", 60, "bold"), fg=task.get_importance_font())
-        importance_indicator.place(relx=0.7, rely=y_multiplier2, anchor="center")
         
-        self.task_combos.update({task.name:[task.name, name_label, edit_button, delete_button, status_indicator, importance_indicator]})
+        self.cred_combos.update({cred.service:[cred.service, service_label, username_label, password_label, peek_button, info_button, edit_button, delete_button]})
     
     def move_down(self) -> None:
         if self.list_index+8 > len(globalvariables.user_creds):
             return
 
         self.list_index += 1
-        task_names = self.task_combos.keys()
-
-        for task_name in task_names:
-            self.task_combos[task_name][1].destroy()
-            self.task_combos[task_name][2].destroy()
-            self.task_combos[task_name][3].destroy()
-            self.task_combos[task_name][4].destroy()
-            self.task_combos[task_name][5].destroy()
+        self.del_row_elements()
         self.place_forget()
-        for idx, task in enumerate(globalvariables.user_creds):
+
+        for idx, cred in enumerate(globalvariables.user_creds):
             if idx < self.list_index:
                 continue
             if idx > self.list_index + 6:
                 break
-            self.insert(idx-self.list_index, task)
+            self.insert(idx-self.list_index, cred)
         self.pack()
 
     def move_up(self) -> None:
@@ -119,44 +136,32 @@ class Listbox(tk.Frame):
             return
         
         self.list_index -= 1
-        task_names = self.task_combos.keys()
-
-        for task_name in task_names:
-            self.task_combos[task_name][1].destroy()
-            self.task_combos[task_name][2].destroy()
-            self.task_combos[task_name][3].destroy()
-            self.task_combos[task_name][4].destroy()
-            self.task_combos[task_name][5].destroy()
+        self.del_row_elements()
         self.place_forget()
-        for idx, task in enumerate(globalvariables.user_creds):
+
+        for idx, cred in enumerate(globalvariables.user_creds):
             if idx < self.list_index:
                 continue
             if idx > self.list_index + 6:
                 break
-            self.insert(idx-self.list_index, task)
+            self.insert(idx-self.list_index, cred)
         self.pack()
 
     def add_task(self) -> None:
-        if credutil.amount_task("newtask") == 1:
+        if credutil.amount_cred("url") == 1:
             return
             
         globalvariables.user_creds.insert(0, Credential())
-
         self.list_index = 0
-        task_names = self.task_combos.keys()
-        for task_name in task_names:
-            self.task_combos[task_name][1].destroy()
-            self.task_combos[task_name][2].destroy()
-            self.task_combos[task_name][3].destroy()
-            self.task_combos[task_name][4].destroy()
-            self.task_combos[task_name][5].destroy()
+        self.del_row_elements()
         self.place_forget()
-        for idx, task in enumerate(globalvariables.user_creds):
+
+        for idx, cred in enumerate(globalvariables.user_creds):
             if idx < self.list_index:
                 continue
             if idx > self.list_index + 6:
                 break
-            self.insert(idx-self.list_index, task)
+            self.insert(idx-self.list_index, cred)
         self.pack()
 
         credutil.save_creds()
@@ -184,63 +189,40 @@ class Listbox(tk.Frame):
         self.filter_large = tk.Label(self.root, image=self.filter_large_icon, bd=0, bg=self.bg_color)
         self.filter_large.place(relx=0.125, rely=0.5, anchor="center")
 
-        self.filter_name = tk.Button(self.root, text="Filter by Name", bg="white", fg="black", font=("Times New Roman", 50, "bold"))
-        self.filter_dead = tk.Button(self.root, text="Filter by Deadline", bg="white", fg="black", font=("Times New Roman", 50, "bold"))
-        self.filter_status = tk.Button(self.root, text="Filter by Status", bg="white", fg="black", font=("Times New Roman", 50, "bold"))
-        self.filter_importance = tk.Button(self.root, text="Filter by Importance", bg="white", fg="black", font=("Times New Roman", 50, "bold"))
-        self.filter_name.configure(command=self.name_sort)
-        self.filter_dead.configure(command=self.dead_sort)
-        self.filter_status.configure(command=self.status_sort)
-        self.filter_importance.configure(command=self.importance_sort)
-        self.filter_name.place(relx=0.5, rely=1/5, anchor="center")
-        self.filter_dead.place(relx=0.5, rely=2/5, anchor="center")
-        self.filter_status.place(relx=0.5, rely=3/5, anchor="center")
-        self.filter_importance.place(relx=0.5, rely=4/5, anchor="center")
+        self.filter_service = tk.Button(self.root, text="Filter by Service", bg="white", fg="black", font=("Times New Roman", 50, "bold"))
+        self.filter_tag = tk.Button(self.root, text="Filter by Tag", bg="white", fg="black", font=("Times New Roman", 50, "bold"))
+        self.filter_service.configure(command=self.service_sort)
+        self.filter_tag.configure(command=self.tag_sort)
+        self.filter_service.place(relx=0.5, rely=1/3, anchor="center")
+        self.filter_tag.place(relx=0.5, rely=2/3, anchor="center")
 
-    def name_sort(self) -> None:
-        credutil.name_sort()
+    def service_sort(self) -> None:
+        credutil.service_sort()
         self.back_from_filter()
     
-    def dead_sort(self) -> None:
-        credutil.deadline_sort()
+    def tag_sort(self) -> None:
+        credutil.tag_sort()
         self.back_from_filter()
     
-    def status_sort(self) -> None:
-        credutil.status_sort()
-        self.back_from_filter()
-    
-    def importance_sort(self) -> None:
-        credutil.importance_sort()
-        self.back_from_filter()
-
     def back_from_filter(self) -> None:
         self.back_button.destroy()
         self.screenshot_label.destroy()
         self.filter_large.destroy()
-        self.filter_name.destroy()
-        self.filter_dead.destroy()
-        self.filter_status.destroy()
-        self.filter_importance.destroy()
+        self.filter_service.destroy()
+        self.filter_tag.destroy()
 
-        task_names = self.task_combos.keys()
-
-        for task_name in task_names:
-            self.task_combos[task_name][1].destroy()
-            self.task_combos[task_name][2].destroy()
-            self.task_combos[task_name][3].destroy()
-            self.task_combos[task_name][4].destroy()
-            self.task_combos[task_name][5].destroy()
+        self.del_row_elements()
         self.place_forget()
-        for idx, task in enumerate(globalvariables.user_creds):
+        for idx, cred in enumerate(globalvariables.user_creds):
             if idx < self.list_index:
                 continue
             if idx > self.list_index + 6:
                 break
-            self.insert(idx-self.list_index, task)
+            self.insert(idx-self.list_index, cred)
         self.pack()
 
-    def edit_task_interface(self, name:str) -> None:
-        self.curr_task_name = name
+    def edit_task_interface(self, service:str) -> None:
+        self.curr_cred_service = service
 
         self.x = self.root.winfo_rootx()
         self.y = self.root.winfo_rooty()
@@ -261,15 +243,15 @@ class Listbox(tk.Frame):
         self.back_button.configure(command=self.back_from_edit)
         self.back_button.place(relx=-0.005, rely=-0.055, anchor="nw")
 
-        self.old_name = tk.Label(self.root, text=name[:17], bg="black", fg="white", font=("Times New Roman", 60, "bold"))
-        self.old_name.place(relx=0.25, rely=1/6, anchor="w")
-        self.old_desc = tk.Label(self.root, text=credutil.find_task(name).description, bg="black", fg="white", font=("Times New Roman", 60, "bold"))
+        self.old_service = tk.Label(self.root, text=service[:17], bg="black", fg="white", font=("Times New Roman", 60, "bold"))
+        self.old_service.place(relx=0.25, rely=1/6, anchor="w")
+        self.old_desc = tk.Label(self.root, text=credutil.find_cred(service).description, bg="black", fg="white", font=("Times New Roman", 60, "bold"))
         self.old_desc.place(relx=0.25, rely=2/6, anchor="w")
-        self.old_dead = tk.Label(self.root, text=((credutil.find_task(name).deadline + "*") if (credutil.find_task(name).deadline == "00/00/0000") else (credutil.find_task(name).deadline)), bg="black", fg="white", font=("Times New Roman", 60, "bold"))
+        self.old_dead = tk.Label(self.root, text=((credutil.find_cred(service).deadline + "*") if (credutil.find_cred(service).deadline == "00/00/0000") else (credutil.find_cred(service).deadline)), bg="black", fg="white", font=("Times New Roman", 60, "bold"))
         self.old_dead.place(relx=0.25, rely=3/6, anchor="w")
-        self.old_status = tk.Label(self.root, text=credutil.find_task(name).status, bg="black", fg="white", font=("Times New Roman", 60, "bold"))
+        self.old_status = tk.Label(self.root, text=credutil.find_cred(service).status, bg="black", fg="white", font=("Times New Roman", 60, "bold"))
         self.old_status.place(relx=0.25, rely=4/6, anchor="w")
-        self.old_importance = tk.Label(self.root, text=credutil.find_task(name).importance, bg="black", fg="white", font=("Times New Roman", 60, "bold"))
+        self.old_importance = tk.Label(self.root, text=credutil.find_cred(service).importance, bg="black", fg="white", font=("Times New Roman", 60, "bold"))
         self.old_importance.place(relx=0.25, rely=5/6, anchor="w")
         self.name_entry = tk.Entry(self.root, bg="black", fg="white", font=("Times New Roman", 60, "bold"), width=10)
         self.name_entry.place(relx=0.95, rely=1/6, anchor="e")
@@ -280,39 +262,25 @@ class Listbox(tk.Frame):
         self.importance_entry = tk.OptionMenu(self.root, self.importance_var, "Minimal", "Trivial", "Average", "Significant", "Critical")
         self.importance_entry.place(relx=0.95, rely=5/6, anchor="e")
 
-        self.year_entry = tk.OptionMenu(self.root, self.year_var, self.valid_years[0], self.valid_years[1], self.valid_years[2], self.valid_years[3], self.valid_years[4], self.valid_years[5], self.valid_years[6], self.valid_years[7], self.valid_years[8], self.valid_years[9])
-        self.year_entry.place(relx=0.95, rely=3/6, anchor="e")
-        self.month_entry = tk.OptionMenu(self.root, self.month_var, "January:01", "February:02", "March:03", "April:04", "May:05", "June:06", "July:07", "August:08", "September:09", "October:10", "November:11", "December:12")
-        self.month_entry.place(relx=0.6675, rely=3/6, anchor="w")
-        self.day_entry = tk.OptionMenu(self.root, self.day_var, "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31")
-        self.day_entry.place(relx=((0.9425+0.675)/2), rely=3/6, anchor="center")
-
         self.edit_large = tk.Button(self.root, image=self.edit_large_icon, bd=0, bg=self.bg_color)
-        self.edit_large.configure(command=lambda n=self.curr_task_name, ne=self.name_entry, dese=self.desc_entry, se=self.status_var, ie=self.importance_var: self.edit_task(n, ne, dese, se, ie))
+        self.edit_large.configure(command=lambda n=self.curr_cred_service, ne=self.name_entry, dese=self.desc_entry, se=self.status_var, ie=self.importance_var: self.edit_task(n, ne, dese, se, ie))
         self.edit_large.place(relx=0.125, rely=0.4, anchor="center")
         self.edit_label = tk.Label(self.root, text="Edit Task", justify="center", font=("Times New Roman", 52, "bold"), bg="white", fg="black")
         self.edit_label.place(relx=0.125, rely=0.575, anchor="center")
     
-    def edit_task(self, name:str, name_entry:tk.Entry, desc_entry:tk.Entry, status_entry:tk.Entry, importance_entry:tk.Entry) -> None:
-        if not credutil.edit_task(name, name_entry, desc_entry, self.month_var, self.day_var, self.year_var, status_entry, importance_entry):
+    def edit_task(self, service:str, service_entry:tk.Entry, username_entry:tk.Entry, password_entry:tk.Entry, email_entry:tk.Entry, tag_var:tk.StringVar, id_entry:tk.Entry) -> None:
+        if not credutil.edit_cred(service, service_entry, username_entry, password_entry, email_entry, tag_var, id_entry):
             return
         self.back_from_edit()
 
-        task_names = self.task_combos.keys()
-
-        for task_name in task_names:
-            self.task_combos[task_name][1].destroy()
-            self.task_combos[task_name][2].destroy()
-            self.task_combos[task_name][3].destroy()
-            self.task_combos[task_name][4].destroy()
-            self.task_combos[task_name][5].destroy()
+        self.del_row_elements()
         self.place_forget()
-        for idx, task in enumerate(globalvariables.user_creds):
+        for idx, cred in enumerate(globalvariables.user_creds):
             if idx < self.list_index:
                 continue
             if idx > self.list_index + 6:
                 break
-            self.insert(idx-self.list_index, task)
+            self.insert(idx-self.list_index, cred)
         self.pack()
 
     def back_from_edit(self) -> None:
@@ -327,41 +295,28 @@ class Listbox(tk.Frame):
         self.old_importance.destroy()
         self.name_entry.destroy()
         self.desc_entry.destroy()
-        self.month_entry.destroy()
-        self.day_entry.destroy()
-        self.year_entry.destroy()
         self.status_entry.destroy()
         self.importance_entry.destroy()
 
-        self.month_var.set("")
-        self.day_var.set("")
-        self.year_var.set("")
         self.status_var.set("")
         self.importance_var.set("")
 
     def delete(self, delete_button:tk.Button) -> None:
-        task_names = self.task_combos.keys()
-        task_combos = self.task_combos.values()
+        cred_combos = self.cred_combos.values()
         
-        for combo in task_combos:
-            if combo[3] == delete_button:
-                name = combo[0]
+        for combo in cred_combos:
+            if combo[7] == delete_button:
+                service = combo[0]
         
-        for task_name in task_names:
-            self.task_combos[task_name][1].destroy()
-            self.task_combos[task_name][2].destroy()
-            self.task_combos[task_name][3].destroy()
-            self.task_combos[task_name][4].destroy()
-            self.task_combos[task_name][5].destroy()
-                
-        self.task_combos.pop(self.task_combos[name][0])
-        globalvariables.user_creds.pop(globalvariables.user_creds.index(credutil.find_task(name)))
-        
+        self.del_row_elements()
+        self.cred_combos.pop(self.cred_combos[service][0])
+        globalvariables.user_creds.pop(globalvariables.user_creds.index(credutil.find_cred(service)))
         self.place_forget()
-        for idx, task in enumerate(globalvariables.user_creds):
+
+        for idx, cred in enumerate(globalvariables.user_creds):
             if idx < self.list_index:
                 continue
             if idx > self.list_index + 6:
                 break
-            self.insert(idx-self.list_index, task)
+            self.insert(idx-self.list_index, cred)
         self.pack()

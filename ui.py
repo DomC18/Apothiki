@@ -1,5 +1,8 @@
 from loginutil import verify_existing
+from listbox import Listbox
 import tkinter as tk
+import globalvariables as globalvar
+import constants
 import credutil
 
 root:tk.Tk
@@ -7,7 +10,7 @@ root:tk.Tk
 def init() -> None:
     global root
     root = tk.Tk()
-    root.title("")
+    root.title("Apothiki")
     root.configure(bg="light blue")
 
     width = 1175
@@ -50,16 +53,67 @@ def init() -> None:
 def init_task_interface() -> None:
     global root
     root = tk.Tk()
-    root.title("")
+    root.title("Apothiki")
     root.configure(bg="red")
     
-    width = 1175
-    height = 625
+    width = 1440
+    height = 810
     horiz_offset = (root.winfo_screenwidth() - width) / 2
     vert_offset = (root.winfo_screenheight() - height) / 2
     root.geometry(f"{width}x{height}+{int(horiz_offset)}+{int(vert_offset)}")
     root.resizable(False, False)
 
-    label = tk.Label(root, text="Apothiki", font=("Arial", 80), bg="light blue", justify="center")
-    label.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
+    util_frame = tk.Frame(root, bg="white")
+    util_frame.place(relx=0, rely=0, anchor="nw")
+    profile_frame = tk.Frame(root, bg="white")
+    profile_frame.place(relx=1, rely=0, anchor="ne")
+    cred_frame = tk.Frame(root)
+    cred_frame.place(relx=0.5, rely=1, anchor="s")
+
+    cred_list = Listbox(cred_frame, root, 826, 676, "grey")
+    cred_list.list_index = 0
+    for idx, task in enumerate(globalvar.user_creds):
+        if idx < cred_list.list_index:
+            continue
+        if idx > cred_list.list_index + 6:
+            break
+        cred_list.insert(idx-cred_list.list_index, task)
+    cred_list.pack()
+
+    save_icon = tk.PhotoImage(file=constants.SAVEFILE)
+    save_button = tk.Button(util_frame, image=save_icon, bd=0, bg="white", command=credutil.save_creds)
+    save_button.grid(row=0, column=0)
+    save_label = tk.Label(util_frame, text="Save", justify="center", font=("Times New Roman", 40), bg="white", fg="black")
+    save_label.grid(row=0,column=1)
+    filter_icon = tk.PhotoImage(file=constants.FILTERFILE)
+    filter_button = tk.Button(util_frame, image=filter_icon, bd=0, bg="white")
+    filter_button.configure(command=cred_list.filter_interface)
+    filter_button.grid(row=1, column=0)
+    filter_label = tk.Label(util_frame, text="Filter", justify="center", font=("Times New Roman", 40), bg="white", fg="black")
+    filter_label.grid(row=1, column=1)
+
+    profile_label = tk.Label(profile_frame, text="Log Out", justify="center", font=("Times New Roman", 46), bg="white", fg="black")
+    profile_label.grid(row=0, column=0)
+    profile_icon = tk.PhotoImage(file=constants.PROFILEFILE)
+    profile_button = tk.Button(profile_frame, image=profile_icon, bd=0, bg="white", command=lambda r=root, i=init : credutil.sign_out(r, i))
+    profile_button.grid(row=0, column=1)
+
+    up_button = tk.Button(root, bd=0, text="↑", bg="white", fg="black", font=("Times New Roman", 46, "bold"))
+    up_button.configure(command=cred_list.move_up)
+    up_button.place(relx=0.7875, rely=0.1675, anchor="nw")
+    down_button = tk.Button(root, bd=0, text="↓", bg="white", fg="black", font=("Times New Roman", 46, "bold"))
+    down_button.configure(command=cred_list.move_down)
+    down_button.place(relx=0.7875, rely=0.9875, anchor="sw")
+
+    add_icon = tk.PhotoImage(file=constants.ADDFILE)
+    add_button = tk.Button(root, image=add_icon, bg="white", bd=0)
+    add_button.configure(command=cred_list.add_task)
+    add_button.place(relx=0.1, rely=0.5, anchor="center")
+    add_label = tk.Label(root, text="Add Task", justify="center", font=("Times New Roman", 46), bg="white", fg="black")
+    add_label.place(relx=0.1, rely=0.6, anchor="center")
+
+    def exit(event:tk.Event) -> None:
+        root.destroy()
+
+    root.bind("<Escape>", exit)
     root.mainloop()

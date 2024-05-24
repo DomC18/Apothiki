@@ -5,6 +5,36 @@ import constants
 import json
 import os
 
+def amount_cred(service:str) -> int:
+    cred_num = 0
+    for cred in globalvariables.user_creds:
+        if cred.service == service:
+            cred_num += 1
+    return cred_num
+
+def find_cred(service:str) -> Credential:
+    for cred in globalvariables.user_creds:
+        if cred.service == service:
+            return cred
+    return None
+
+def edit_cred(service:str, service_entry:tk.Entry, username_entry:tk.Entry, password_entry:tk.Entry, email_entry:tk.Entry, tag_var:tk.StringVar, id_entry:tk.Entry) -> bool:
+    cred_index = globalvariables.user_creds.index(find_cred(service))
+    if service_entry.get() != "":
+        globalvariables.user_creds[cred_index].service = service_entry.get()
+    if username_entry.get() != "":
+        globalvariables.user_creds[cred_index].username = username_entry.get()
+    if password_entry.get() != "":
+        globalvariables.user_creds[cred_index].password = password_entry.get()
+    if email_entry.get() != "":
+        globalvariables.user_creds[cred_index].email = email_entry.get()
+
+def service_sort() -> None:
+    globalvariables.user_creds.sort(key=lambda cred : cred.service)
+
+def tag_sort() -> None:
+    globalvariables.user_creds.sort(key=lambda cred : cred.tag)
+
 def load_creds() -> None:
     data:dict = {}
     file_dir = rf"{constants.USERDATADIR+globalvariables.name}.json"
@@ -18,11 +48,11 @@ def load_creds() -> None:
     for idx in range(len(data["creds"])):
         globalvariables.user_creds.append(
             Credential(
-                data["creds"][idx]["service_name"], 
-                data["creds"][idx]["service_url"], 
+                data["creds"][idx]["service"], 
                 data["creds"][idx]["username"], 
                 data["creds"][idx]["password"],
                 data["creds"][idx]["email"],
+                data["creds"][idx]["tag"],
                 data["creds"][idx]["ids"]
             ))
 
