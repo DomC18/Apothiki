@@ -2,13 +2,28 @@ import random as rr
 import constants
 
 class Credential:
-    def __init__(self, service:str=None, username:str=None, password:str=None, email:str=None, tag:str=None, **ids:str) -> None:
+    tag_keycodes = {
+        "No Category": ["NC", (169, 169, 169), "black", 0],        # Gray
+        "Social Media": ["SM", (59, 89, 152), "white", 1],         # Facebook Blue
+        "Banking": ["BK", (0, 102, 204), "white", 2],              # Bank Blue
+        "Shopping": ["SH", (255, 153, 0), "darkblue", 3],          # Orange
+        "Streaming": ["ST", (229, 9, 20), "white", 4],             # Netflix Red
+        "Productivity": ["PV", (0, 128, 0), "lightgreen", 5],      # Green
+        "Gaming": ["GA", (76, 187, 23), "black", 6],               # Xbox Green
+        "Travel": ["TL", (255, 140, 0), "darkred", 7],             # Dark Orange
+        "Telecomm": ["TC", (0, 174, 239), "navy", 8],              # Light Blue
+        "Utilities": ["U", (112, 128, 144), "lightyellow", 9],     # Slate Gray
+        "Subscriptions": ["SU", (138, 43, 226), "lavender", 10],   # Blue Violet
+        "Professional": ["PR", (70, 130, 180), "white", 11]        # Steel Blue
+    }
+
+    def __init__(self, service:str="service", username:str="username", password:str="password", email:str="email", tag:str="No Category", other_info:str="info") -> None:
         self.service = service
         self.username = username
         self.password = password
         self.email = email
         self.tag = tag
-        self.ids = ids
+        self.other_info = other_info
     
     def edit_service(self, new_service:str) -> None:
         self.service = new_service
@@ -25,8 +40,20 @@ class Credential:
     def edit_tag(self, new_tag:str) -> None:
         self.tag = new_tag
 
-    def edit_id(self, id_key:str, id_value:str) -> None:
-        self.ids[id_key] = id_value
+    def edit_other_info(self, new_info:str) -> None:
+        self.other_info = new_info
+
+    def get_tag_short(self):
+        return self.tag_keycodes[self.tag][0]
+    
+    def get_tag_color(self):
+        return self.tag_keycodes[self.tag][1]
+    
+    def get_tag_font_color(self):
+        return self.tag_keycodes[self.tag][2]
+    
+    def get_tag_priority(self):
+        return self.tag_keycodes[self.tag][3]
 
     def generate_random_cred(self, length:int=20, include_letters:bool=False, include_digits:bool=False, include_punc:bool=False) -> str:
         if not include_letters and not include_digits and not include_punc:
@@ -54,16 +81,16 @@ class Credential:
             return cred
 
     def __repr__(self) -> str:
-        return f"\nService: {self.service}\nUsername: {self.username}\nPassword: {self.password}\nEmail: {self.email}\nIDs: {self.ids}\n"
+        return f"\nService: {self.service}\nUsername: {self.username}\nPassword: {self.password}\nEmail: {self.email}\nInfo: {self.other_info}\n"
 
     def __str__(self) -> str:
-        return f"\nService: {self.service}\nUsername: {self.username}\nPassword: {self.password}\nEmail: {self.email}\nIDs: {self.ids}\n"
+        return f"\nService: {self.service}\nUsername: {self.username}\nPassword: {self.password}\nEmail: {self.email}\nInfo: {self.other_info}\n"
     
     def __eq__(self, other) -> bool:
-        return self.service == other.service and self.username == other.username and self.password == other.password and self.email == other.email and self.ids == other.ids
+        return self.service == other.service and self.username == other.username and self.password == other.password and self.email == other.email and self.other_info == other.other_info
     
     def __ne__(self, other) -> bool:
-        return self.service != other.service or self.username != other.username or self.password != other.password or self.email != other.email or self.ids != other.ids
+        return self.service != other.service or self.username != other.username or self.password != other.password or self.email != other.email or self.other_info != other.other_info
     
     def cred_as_dict(self) -> dict:
         return {
@@ -72,5 +99,5 @@ class Credential:
             "password": self.password,
             "email": self.email,
             "tag": self.tag,
-            "ids": self.ids,
+            "info": self.other_info,
         }

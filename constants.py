@@ -14,7 +14,7 @@ FILTERFILE = ICONDIR + "filter.png"
 FILTERLARGEFILE = ICONDIR + "filterlarge.png"
 INFOFILE = ICONDIR + "info.png"
 INFOLARGEFILE = ICONDIR + "infolarge.png"
-PEEKFILE = ICONDIR = "peek.png"
+PEEKFILE = ICONDIR + "peek.png"
 PROFILEFILE = ICONDIR + "profile.png"
 SAVEFILE = ICONDIR + "save.png"
 

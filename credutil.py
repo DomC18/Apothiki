@@ -1,4 +1,5 @@
 from credential import Credential
+from tkinter import messagebox
 import globalvariables
 import tkinter as tk
 import constants
@@ -18,8 +19,15 @@ def find_cred(service:str) -> Credential:
             return cred
     return None
 
-def edit_cred(service:str, service_entry:tk.Entry, username_entry:tk.Entry, password_entry:tk.Entry, email_entry:tk.Entry, tag_var:tk.StringVar, id_entry:tk.Entry) -> bool:
+def edit_cred(service:str, service_entry:tk.Entry, username_entry:tk.Entry, password_entry:tk.Entry, email_entry:tk.Entry, tag_var:tk.StringVar, info_entry:tk.Entry) -> bool:
     cred_index = globalvariables.user_creds.index(find_cred(service))
+
+    if globalvariables.user_creds[cred_index].tag == "" and tag_var.get() == "":
+        messagebox.showerror("Tag Error", "Please select a tag from the dropdown")
+        return False
+
+    if tag_var.get() != "":
+        globalvariables.user_creds[cred_index].tag = tag_var.get()
     if service_entry.get() != "":
         globalvariables.user_creds[cred_index].service = service_entry.get()
     if username_entry.get() != "":
@@ -28,6 +36,10 @@ def edit_cred(service:str, service_entry:tk.Entry, username_entry:tk.Entry, pass
         globalvariables.user_creds[cred_index].password = password_entry.get()
     if email_entry.get() != "":
         globalvariables.user_creds[cred_index].email = email_entry.get()
+    if info_entry.get() != "":
+        globalvariables.user_creds[cred_index].info = info_entry.get()
+    
+    return True
 
 def service_sort() -> None:
     globalvariables.user_creds.sort(key=lambda cred : cred.service)
@@ -53,7 +65,7 @@ def load_creds() -> None:
                 data["creds"][idx]["password"],
                 data["creds"][idx]["email"],
                 data["creds"][idx]["tag"],
-                data["creds"][idx]["ids"]
+                data["creds"][idx]["info"]
             ))
 
 def save_creds() -> None:
@@ -69,7 +81,7 @@ def save_creds() -> None:
 
     cred_data = {"creds": []}
     for cred in globalvariables.user_creds:
-        cred_data["creds"].append(cred.return_as_dict())
+        cred_data["creds"].append(cred.cred_as_dict())
     data.update(cred_data)
 
     try:

@@ -1,6 +1,7 @@
 import tkinter as tk
 import constants
 import globalvariables
+import credutil
 import json
 
 def verify_existing(root:tk.Tk, first_entry:tk.Entry, user_entry:tk.Entry, password_entry:tk.Entry, first_label:tk.Label, user_label:tk.Label, password_label:tk.Label, task_func) -> None:
@@ -44,6 +45,7 @@ def verify_existing(root:tk.Tk, first_entry:tk.Entry, user_entry:tk.Entry, passw
 
     if username == user_entry.get() and password == password_entry.get():
         root.destroy()
+        credutil.load_creds()
         task_func()
 
 def register_new(root:tk.Tk, first_entry:tk.Entry, user_entry:tk.Entry, password_entry:tk.Entry, task_func) -> None:
