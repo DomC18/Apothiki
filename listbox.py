@@ -417,7 +417,7 @@ class Listbox(tk.Frame):
             found_labels[1].place_forget()
             found_labels[2].place_forget()
 
-            found_labels[2].configure(text=credutil.find_cred(service).password[:12] + "...")
+            found_labels[2].configure(text=credutil.find_cred(service).password[:11] + "...")
             found_labels[2].place(anchor="ne", relx=0.975-(4.55*0.0925), rely=found_state[0])
             found_labels[1].configure(text=credutil.find_cred(service).username[:3] + "...")
             found_labels[1].place(anchor="nw", relx=0.0075, rely=found_state[0])

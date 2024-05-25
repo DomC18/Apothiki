@@ -107,10 +107,10 @@ class Credential:
     
     def cred_as_dict(self) -> dict:
         return {
-            "service": self.service,
-            "username": self.username,
-            "password": self.password,
-            "email": self.email,
-            "tag": self.tag,
-            "info": self.other_info,
+            "service": rf"{self.service}",
+            "username": rf"{self.username}",
+            "password": rf"{self.password}",
+            "email": rf"{self.email}",
+            "tag": rf"{self.tag}",
+            "info": rf"{self.other_info}"
         }
