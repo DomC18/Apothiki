@@ -19,6 +19,6 @@ PROFILEFILE = ICONDIR + "profile.png"
 SAVEFILE = ICONDIR + "save.png"
 SEARCHFILE = ICONDIR + "search.png"
 
-CRED_CHARS = string.ascii_letters + string.digits + string.punctuation
+CRED_CHARS = string.ascii_letters + string.digits + string.punctuation[0] + string.punctuation[2:6]
 LET_CHARS = string.ascii_letters
 DIGIT_CHARS = string.digits
