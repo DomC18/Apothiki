@@ -82,7 +82,6 @@ def init_task_interface() -> None:
         cred_list.insert(idx-cred_list.list_index, task)
     cred_list.pack()
 
-    globalvar.filtered_creds = globalvar.user_creds
     search_entry = tk.Entry(search_frame, bd=0, bg="#ffabab", fg="black", font=("Times New Roman", 35, "bold"), width=20)
     search_entry.grid(row=0, column=0, padx=10, pady=10)
     search_icon = tk.PhotoImage(file=constants.SEARCHFILE)
