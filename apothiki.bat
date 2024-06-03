@@ -1,1 +1,0 @@
-python3 C:\Users\Domth\Desktop\MyCode\Apothiki\main.py

@@ -115,7 +115,7 @@ def init_task_interface() -> None:
 
     add_icon = tk.PhotoImage(file=constants.ADDFILE)
     add_button = tk.Button(root, image=add_icon, bg="red", bd=0)
-    add_button.configure(command=cred_list.add_task)
+    add_button.configure(command=cred_list.add_cred)
     add_button.place(relx=0.9, rely=0.5, anchor="center")
     add_label = tk.Label(root, text="Add Service", justify="center", font=("Times New Roman", 35), bg="red", fg="black")
     add_label.place(relx=0.9, rely=0.6, anchor="center")

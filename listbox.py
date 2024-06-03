@@ -214,7 +214,7 @@ class Listbox(tk.Frame):
         self.list_index -= 1
         self.filter_insert()
 
-    def add_task(self) -> None:
+    def add_cred(self) -> None:
         if credutil.amount_cred("service") == 1:
             return
             

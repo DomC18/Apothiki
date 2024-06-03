@@ -1,0 +1,16 @@
+{
+    "user": {
+        "username": "user",
+        "password": "user"
+    },
+    "creds": [
+        {
+            "service": "service",
+            "username": "username",
+            "password": "password",
+            "email": "email",
+            "tag": "No Category",
+            "info": "info"
+        }
+    ]
+}

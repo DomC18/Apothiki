@@ -41,7 +41,7 @@ del %PYTHON_INSTALLER%
 
 :: Create a desktop shortcut to run the script again
 echo Creating a desktop shortcut...
-powershell -Command "$WshShell = New-Object -ComObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut('%SHORTCUT_PATH%'); $Shortcut.TargetPath = '%MAIN_DIR%apothiki.bat'; $Shortcut.WorkingDirectory = '%MAIN_DIR%'; $Shortcut.IconLocation = 'python.exe,0'; $Shortcut.Save()"
+powershell -Command "$WshShell = New-Object -ComObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut('%SHORTCUT_PATH%'); $Shortcut.TargetPath = '%MAIN_DIR%main.py'; $Shortcut.WorkingDirectory = '%MAIN_DIR%'; $Shortcut.IconLocation = 'python.exe,0'; $Shortcut.Save()"
 
 powershell -Command clear
 echo Python and Pillow have been installed successfully.
